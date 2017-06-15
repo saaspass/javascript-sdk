@@ -27,7 +27,12 @@ Note about JavaScript SDK sample project:
    - If before asking SAASPASS authentication, you already know which user you want to authenticate (prior to this step, you might already validate username and password of user; so would know the username), you can post this username to SAASPASS widget, so that it will fill the username automatically in the input and user won't need to enter username again.
      - On JavaScript SDK Project: In **index.html** , there is:
      ```
-     function saaspassWidgetLoaded(iframe) {}
+     function saaspassWidgetLoaded(iframe) {
+     var username = getUrlParam('username');
+       if (username) {
+         iframe.contentWindow.postMessage({username: username}, iframe.src);
+       }
+     }
      ```
    - Now user needs to authenticate with SAASPASS. After successful authentication, SAASPASS login widget will post back the response to the caller page of your application. This response is JWT (JSON Web Token) that contains info (claims) about authenticated user and it is signed by SAASPASS using your App Password (secret). So you need to handle this response on the caller page and post it to your application server to continue. (If you don't have a backend in your application, then you should do JWT validation and use the user claims in your web page to continue)
      - On JavaScript SDK Project: In **index.html** , there is:
