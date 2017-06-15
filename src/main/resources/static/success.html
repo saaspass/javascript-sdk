@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login successful</title>
+        <style>
+            body {
+                background: #f8f8f8;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>You are logged in</h1>
+        <pre id="username" style="font-size: 20px"></pre>
+
+        <script>
+            window.onload = function () {
+                var username = getUrlParam('username');
+
+                if (username) {
+                    var pre = document.querySelector('pre#username');
+                    pre.textContent = decodeURIComponent(username);
+                }
+            };
+
+            function getUrlParam(name) {
+                var params = window.location.search.split(/[?&]/);
+                var param = params.find(function (param) {
+                    return param.startsWith(name + '=');
+                });
+                return (param || '').split('=')[1];
+            }
+        </script>
+    </body>
+</html>

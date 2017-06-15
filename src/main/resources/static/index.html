@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Sample Application</title>
+        <style>
+            body {
+                background: #f8f8f8;
+            }
+
+            iframe {
+                background: #ffffe0;
+                width: 500px;
+                height: 750px;
+            }
+
+            pre {
+                background: #f0f8ff;
+            }
+        </style>
+        <script>
+            window.addEventListener('message', onMessage, false);
+
+            function saaspassWidgetLoaded(iframe) {
+
+                // if you already have username of user, load this page with username parameter and widget will have the username by default.
+                var username = getUrlParam('username');
+
+                if (username) {
+                    iframe.contentWindow.postMessage({username: username}, iframe.src);
+                }
+            }
+
+            // This is triggered when SAASPASS widget returns you the user login result
+            function onMessage(e) {
+                doPostBack(e.data);
+            }
+
+            // This will post the SAASPASS response to your app server
+            function doPostBack(response) {
+                // keep SAASPASS response in a hidden input
+                var saaspass_input = document.createElement('input');
+                saaspass_input.type = 'hidden';
+                saaspass_input.name = 'saaspass_response';
+                saaspass_input.value = response.idToken;
+
+                var form = document.createElement('form');
+                document.body.appendChild(form);
+
+                // change here according to your app server path that will handle the SAASPASS response
+                form.method = 'POST';
+                form.action = 'http://localhost:4000/api/apprest/consume';
+
+                // add saaspass response to the form to submit
+                form.appendChild(saaspass_input);
+
+                // submit the response to your app server
+                if (typeof submitCallback === 'function') {
+                    submitCallback.call(null, form);
+                } else {
+                    form.submit();
+                }
+            }
+
+            function getUrlParam(name) {
+                var params = window.location.search.split(/[?&]/);
+                var param = params.find(function (param) {
+                    return param.startsWith(name + '=');
+                });
+                return (param || '').split('=')[1];
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Welcome to your Sample Application</h1>
+        <p>Please identify yourself with your SAASPASS account:</p>
+        <!-- Load the SAASPASS widget for users to access SAASPASS login form. This should take your application key as parameter  -->
+        <iframe
+            src="https://www.saaspass.com/sd/widget/?appKey=IJB9T0KPMBRTDDJR"
+            onload="saaspassWidgetLoaded(this)"
+        ></iframe>
+    </body>
+</html>
